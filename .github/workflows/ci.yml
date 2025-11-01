@@ -25,9 +25,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
       - name: Check files
@@ -39,14 +39,14 @@ jobs:
       - pre-commit
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.DEFAULT_UV_VERSION }}
           enable-cache: true
@@ -73,7 +73,7 @@ jobs:
             --frozen \
             mkdocs gh-deploy --force --no-history
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: documentation
           path: site/
@@ -89,18 +89,18 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Start containers
         run: |
           docker compose --file ${{ github.workspace }}/docker/compose/docker-compose.ci-test.yml pull --quiet
           docker compose --file ${{ github.workspace }}/docker/compose/docker-compose.ci-test.yml up --detach
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "${{ matrix.python-version }}"
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.DEFAULT_UV_VERSION }}
           enable-cache: true
@@ -158,13 +158,13 @@ jobs:
     needs:
       - pre-commit
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
           cache: 'pnpm'
@@ -191,13 +191,13 @@ jobs:
         shard-index: [1, 2, 3, 4]
         shard-count: [4]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
           cache: 'pnpm'
@@ -241,13 +241,13 @@ jobs:
         shard-index: [1, 2]
         shard-count: [2]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
           cache: 'pnpm'
@@ -284,13 +284,13 @@ jobs:
       - tests-frontend
       - tests-frontend-e2e
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10
       - name: Use Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.x
           cache: 'pnpm'
@@ -359,7 +359,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       # If https://github.com/docker/buildx/issues/1044 is resolved,
       # the append input with a native arm64 arch could be used to
       # significantly speed up building
@@ -416,7 +416,7 @@ jobs:
           docker create --name frontend-extract ${{ fromJSON(steps.docker-meta.outputs.json).tags[0] }}
           docker cp frontend-extract:/usr/src/paperless/src/documents/static/frontend src/documents/static/frontend/
       - name: Upload frontend artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: frontend-compiled
           path: src/documents/static/frontend/
@@ -429,14 +429,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.DEFAULT_UV_VERSION }}
           enable-cache: true
@@ -449,12 +449,12 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -qq --no-install-recommends gettext liblept5
       - name: Download frontend artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: frontend-compiled
           path: src/documents/static/frontend/
       - name: Download documentation artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: documentation
           path: docs/_build/html/
@@ -517,7 +517,7 @@ jobs:
           sudo chown -R 1000:1000 paperless-ngx/
           tar -cJf paperless-ngx.tar.xz paperless-ngx/
       - name: Upload release artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release
           path: dist/paperless-ngx.tar.xz
@@ -534,7 +534,7 @@ jobs:
     if: github.ref_type == 'tag' && (startsWith(github.ref_name, 'v') || contains(github.ref_name, '-beta.rc'))
     steps:
       - name: Download release artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: release
           path: ./
@@ -575,16 +575,16 @@ jobs:
     if: needs.publish-release.outputs.prerelease == 'false'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
       - name: Set up Python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON_VERSION }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           version: ${{ env.DEFAULT_UV_VERSION }}
           enable-cache: true
@@ -612,7 +612,7 @@ jobs:
           git commit -am "Changelog ${{ needs.publish-release.outputs.version }} - GHA"
           git push origin ${{ needs.publish-release.outputs.version }}-changelog
       - name: Create Pull Request
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const { repo, owner } = context.repo;
